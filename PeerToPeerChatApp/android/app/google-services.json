@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "195682101354",
+    "project_id": "peer-to-peer-chat-5302a",
+    "storage_bucket": "peer-to-peer-chat-5302a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:195682101354:android:c015a5768deacd11060213",
+        "android_client_info": {
+          "package_name": "com.example.peer_to_peer_chat_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "195682101354-n24ouo8onjc0okpg2qb1jrkijp80h615.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQiej8F0PGsBASxEBYQFRjJPzKi-uOtW0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "195682101354-n24ouo8onjc0okpg2qb1jrkijp80h615.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
