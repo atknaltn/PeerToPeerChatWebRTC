@@ -29,6 +29,15 @@ class _ChatScreenState extends State<ChatScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Chat'),
+        actions: <Widget>[IconButton(icon: Icon(Icons.exit_to_app),onPressed: () {
+          MyPhone.webRTCHelper!.endSession();
+          
+          print("slm");
+        },),],
+        /*<Widget>[
+          Padding(padding: const EdgeInsets.only(right: 16.0),
+          child: Row(mainAxisAlignment: MainAxisAlignment.center,children: <Widget>[Container()],),)
+        ],*/
       ),
       body: Column(
         children: [

@@ -32,6 +32,23 @@ abstract class _WebRTCHelperBase with Store {
   @observable
   ObservableList<Message> messages = ObservableList();
 
+  Future<void> endSession() async {
+    // Close the data channel
+    _dataChannel?.close();
+
+    // Close the peer connection
+    await _connection?.close();
+    _connection = null;
+
+    // Perform any additional cleanup or actions as needed
+    // For example, deleting the signaling document from Firestore
+
+    // Clear the messages list
+    messages.clear();
+
+    print("WebRTC session ended");
+  }
+
   Future<String> offerConnection() async {
     _connection = await _createPeerConnection();
     await _createDataChannel();
@@ -54,7 +71,12 @@ abstract class _WebRTCHelperBase with Store {
   }
 
   Future<void> acceptAnswer(RTCSessionDescription answer) async {
-    await _connection!.setRemoteDescription(answer);
+    try {
+      await _connection!.setRemoteDescription(answer);
+    } catch (e) {
+      print("accept answer");
+    }
+    
     //messages.add(Message.fromSystem("Answer Accepted"));
     print("Answer Accepted");
   }

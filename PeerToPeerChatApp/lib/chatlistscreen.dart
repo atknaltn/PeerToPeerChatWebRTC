@@ -6,6 +6,8 @@ import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:peer_to_peer_chat_app/phone.dart';
 import 'package:peer_to_peer_chat_app/webrtc_helper.dart';
 
+import 'chatscreen.dart';
+
 class ChatListScreen extends StatefulWidget {
   const ChatListScreen({super.key});
 
@@ -42,15 +44,22 @@ class _ChatListScreenState extends State<ChatListScreen> {
                 itemCount: snapshot.data!.docs.length,
                 itemBuilder: (context, index) {
                   DocumentSnapshot request = snapshot.data!.docs[index];
+                  String remotePeer;
+                  if (request['receiver'] == MyPhone.phoneNumber) {
+                    remotePeer = request['sender'];
+                  }
+                  else{
+                    remotePeer = request['receiver'];
+                  }
                   return ListTile(
-                    title: Text('${request['receiver']}'),
+                    title: Text(remotePeer),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         IconButton(
                           icon: const Icon(Icons.join_full),
-                          onPressed: () async {
-                            if (request['sender'] == MyPhone.phoneNumber) {
+                          onPressed: () {
+                           /* if (request['sender'] == MyPhone.phoneNumber) {
                               RTCSessionDescription answer;
                               final answerMap =
                                   json.decode(request['sdpReceiver']);
@@ -59,8 +68,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
                                 answerMap["type"],
                               );
                               await MyPhone.webRTCHelper!.acceptAnswer(answer);
-                            }
-                            //Navigator.pushNamed(context, 'chat');
+                            }*/
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => const ChatScreen(),));
                           },
                         ),
                       ],
