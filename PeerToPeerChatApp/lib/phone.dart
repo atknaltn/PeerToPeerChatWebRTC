@@ -7,7 +7,7 @@ class MyPhone extends StatefulWidget {
 
   static String verify = "";
   static String phoneNumber = "+901234567890";
-  static WebRTCHelper? webRTCHelper = WebRTCHelper();
+  static Map<String, WebRTCHelper?> webRTCHelpers = {};
 
   @override
   State<MyPhone> createState() => _MyPhoneState();

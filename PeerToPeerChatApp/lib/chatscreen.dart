@@ -8,7 +8,8 @@ import 'package:intl/intl.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({super.key});
+  final String remotePhoneNumber;
+  const ChatScreen({super.key, required this.remotePhoneNumber});
 
   @override
   _ChatScreenState createState() => _ChatScreenState();
@@ -30,7 +31,7 @@ class _ChatScreenState extends State<ChatScreen> {
       appBar: AppBar(
         title: Text('Chat'),
         actions: <Widget>[IconButton(icon: Icon(Icons.exit_to_app),onPressed: () {
-          MyPhone.webRTCHelper!.endSession();
+          MyPhone.webRTCHelpers[widget.remotePhoneNumber]!.endSession();
           
           print("slm");
         },),],
@@ -47,7 +48,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 padding: EdgeInsets.all(8),
                 reverse: true,
                 order: GroupedListOrder.DESC,
-                elements: MyPhone.webRTCHelper!.messages.toList(),
+                elements: MyPhone.webRTCHelpers[widget.remotePhoneNumber]!.messages.toList(),
                 groupBy: (message) => DateTime(
                   message.date.year,
                   message.date.month,
@@ -94,7 +95,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 IconButton(
                     icon: Icon(Icons.send),
                     onPressed: () async {
-                      await MyPhone.webRTCHelper!
+                      await MyPhone.webRTCHelpers[widget.remotePhoneNumber]!
                           .sendMessage(chatController.text);
                       chatController.clear();
                     })

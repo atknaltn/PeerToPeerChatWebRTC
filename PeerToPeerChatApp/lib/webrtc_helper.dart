@@ -10,8 +10,13 @@ part 'webrtc_helper.g.dart';
 
 Map<String, dynamic> _connectionConfiguration = {
   'iceServers': [
-    {'url': 'stun:stun.l.google.com:19302'},
-  ]
+    {'urls': 'stun:stun.l.google.com:19302'},
+    {
+      'urls': 'turn:relay1.expressturn.com:3478',
+      'username': 'efT9CC4A8CAPQTE051',
+      'credential': 'Ojvyo4gmgM42RteI',
+    },
+  ],
 };
 
 const _offerAnswerConstraints = {
@@ -63,6 +68,7 @@ abstract class _WebRTCHelperBase with Store {
   Future<String> answerConnection(RTCSessionDescription offer) async {
     _connection = await _createPeerConnection();
     await _connection!.setRemoteDescription(offer);
+    await _createDataChannel();
     final answer = await _connection!.createAnswer(_offerAnswerConstraints);
     await _connection!.setLocalDescription(answer);
     return _sdpChanged();

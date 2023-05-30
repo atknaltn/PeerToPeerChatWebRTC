@@ -47,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
             answerMap["sdp"],
             answerMap["type"],
         );
-        await MyPhone.webRTCHelper!.acceptAnswer(answer);  
+        await MyPhone.webRTCHelpers[receiverId]!.acceptAnswer(answer); 
       }
 
       // Check if receiverId or senderId equals userId and status is "done"
@@ -94,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: DefaultTabController(
-        length: 4,
+        length: 3,
         child: Scaffold(
           appBar: AppBar(
             bottom: const TabBar(
@@ -108,9 +108,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 Tab(
                   text: "Contacts",
                 ),
-                Tab(
-                  text: "Chat",
-                ),
               ],
             ),
             title: const Text('Peer2Peer Chat'),
@@ -120,7 +117,6 @@ class _HomeScreenState extends State<HomeScreen> {
               const ChatListScreen(),
               const RequestScreen(),
               ContactScreen(),
-              const ChatScreen()
             ],
           ),
         ),

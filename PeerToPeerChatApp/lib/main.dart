@@ -31,7 +31,6 @@ void main() async {
       'contactscreen': (context) => ContactScreen(),
       'requestscreen': (context) => RequestScreen(),
       'chatlistscreen': (context) => ChatListScreen(),
-      'chat': (context) => ChatScreen(),
     },
   ));
 }

@@ -15,7 +15,10 @@ class SignalHandler {
     if (querySnapshot.docs.isNotEmpty) {
       return false;
     } else {
-      String sdp = await MyPhone.webRTCHelper!.offerConnection();
+      WebRTCHelper webRTCHelper = WebRTCHelper();
+      MyPhone.webRTCHelpers[phoneNumber] = webRTCHelper;
+
+      String sdp = await MyPhone.webRTCHelpers[phoneNumber]!.offerConnection();
       await FirebaseFirestore.instance.collection('signaling').add({
         'sender': MyPhone.phoneNumber,
         'receiver': phoneNumber,

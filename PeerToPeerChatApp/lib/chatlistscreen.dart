@@ -69,7 +69,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                               );
                               await MyPhone.webRTCHelper!.acceptAnswer(answer);
                             }*/
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => const ChatScreen(),));
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => ChatScreen(remotePhoneNumber: remotePeer,),));
                           },
                         ),
                       ],

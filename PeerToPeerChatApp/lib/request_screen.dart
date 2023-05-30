@@ -49,7 +49,12 @@ class _RequestScreenState extends State<RequestScreen> {
                               offerMap["sdp"],
                               offerMap["type"],
                             );
-                            var sdp = await MyPhone.webRTCHelper!
+                            WebRTCHelper webRTCHelper = WebRTCHelper();
+                            MyPhone.webRTCHelpers[request['sender']] =
+                                webRTCHelper;
+                            // print(">>>>>>>>>>>>>>>>>>>>>>>> PHONE: "+request['sender']);
+                            var sdp = await MyPhone
+                                .webRTCHelpers[request['sender']]!
                                 .answerConnection(offer);
                             QuerySnapshot querySnapshot =
                                 await FirebaseFirestore.instance
