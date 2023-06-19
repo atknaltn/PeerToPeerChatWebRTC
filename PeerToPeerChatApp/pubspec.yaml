@@ -50,6 +50,8 @@ dependencies:
   fast_contacts: ^3.0.3
   flutter_screenutil: ^5.7.0
   fluttertoast: ^8.2.1
+  livekit_client: ^1.3.4
+  multi_select_flutter: ^4.1.3
 
 dev_dependencies:
   flutter_test:

@@ -7,15 +7,15 @@ import 'package:grouped_list/grouped_list.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
-class ChatScreen extends StatefulWidget {
+class SA extends StatefulWidget {
   final String remotePhoneNumber;
-  const ChatScreen({super.key, required this.remotePhoneNumber});
+  const SA({super.key, required this.remotePhoneNumber});
 
   @override
-  _ChatScreenState createState() => _ChatScreenState();
+  _SAState createState() => _SAState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
+class _SAState extends State<SA> {
   final _controller = TextEditingController();
   final chatController = TextEditingController();
   DateTime date = DateTime(2017, 9, 7, 17, 30);

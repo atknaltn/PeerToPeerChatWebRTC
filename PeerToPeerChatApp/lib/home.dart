@@ -18,7 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    startSignalingListener(MyPhone.phoneNumber);
+    //startSignalingListener(MyPhone.phoneNumber);
   }
  void startSignalingListener(String userId) async {
   final signalingRef = FirebaseFirestore.instance.collection('signaling');
@@ -94,16 +94,13 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: DefaultTabController(
-        length: 3,
+        length: 2,
         child: Scaffold(
           appBar: AppBar(
             bottom: const TabBar(
               tabs: [
                 Tab(
                   text: "Chat List",
-                ),
-                Tab(
-                  text: "Requests",
                 ),
                 Tab(
                   text: "Contacts",
@@ -115,7 +112,6 @@ class _HomeScreenState extends State<HomeScreen> {
           body: TabBarView(
             children: [
               const ChatListScreen(),
-              const RequestScreen(),
               ContactScreen(),
             ],
           ),
