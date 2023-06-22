@@ -1,9 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:peer_to_peer_chat_app/Services/AESencrypter.dart';
 import 'package:peer_to_peer_chat_app/screens/phone.dart';
 import 'package:peer_to_peer_chat_app/webrtc_mesh.dart';
 import 'package:peer_to_peer_chat_app/services/firestore_signalling.dart';
+
+import '../src/models/contact_service.dart';
 
 class ChatScreen extends StatefulWidget {
   final String roomId;
@@ -23,8 +26,14 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  List<Contact>? contacts;
   final _messages = <Message>[];
   final TextEditingController _textController = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    contacts = ContactService.allContacts;
+  }
 
  @override
   void dispose() {
@@ -34,6 +43,18 @@ class _ChatScreenState extends State<ChatScreen> {
   });
 
     widget.webRTCMesh.dispose();
+  }
+
+    String getContactName(String phoneNumber) {
+    for (var contact in contacts!) {
+      if (contact.phones != null && contact.phones!.isNotEmpty) {
+        var contactPhoneNumber = contact.phones![0].value!;
+        if (contactPhoneNumber == phoneNumber) {
+          return contact.givenName ?? '';
+        }
+      }
+    }
+    return phoneNumber;
   }
 
   void _sendMessage(String message) {
@@ -129,7 +150,7 @@ Widget build(BuildContext context) {
                       }
                       return ListTile(
                         title: Text(decryptedMessage ?? ''),
-                        subtitle: Text(message.from),
+                        subtitle: Text(getContactName(message.from)),
                         trailing: Text(message.type),
                       );
                     },

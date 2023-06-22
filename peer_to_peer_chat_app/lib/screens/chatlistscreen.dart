@@ -75,7 +75,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                       remotePeer = getContactName(request['receiver']);
                     }
                   } else {
-                    remotePeer = "GROUP";
+                    remotePeer = request['groupName'];
                   }
                   return ListTile(
                     title: Text(remotePeer),
@@ -94,6 +94,14 @@ class _ChatListScreenState extends State<ChatListScreen> {
                                     chatName: remotePeer,
                                   ),
                                 ));
+                          },
+                        ),
+                          IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () async{
+                            await FirebaseFirestore.instance.collection('rooms')
+                                  .doc(room_id)
+                                  .delete();
                           },
                         ),
                       ],

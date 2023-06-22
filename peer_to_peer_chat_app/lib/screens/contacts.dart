@@ -1,11 +1,8 @@
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:peer_to_peer_chat_app/screens/phone.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'dart:math';
 
 class ContactScreen extends StatefulWidget {
@@ -16,8 +13,6 @@ class ContactScreen extends StatefulWidget {
 }
 
 class _ContactScreenState extends State<ContactScreen> {
-  late final int _createdAt;
-  late final String roomId;
   List<Contact> contacts = [];
   List<String> _appUsers = [];
   bool isLoading = true;
@@ -124,7 +119,7 @@ class _ContactScreenState extends State<ContactScreen> {
             TextButton(
               child: const Text('Send'),
               onPressed: () async {
-                this.roomId = generateRoomID();
+                var roomId = generateRoomID();
                 print('Creating room $roomId');
                 final created = DateTime.now().millisecondsSinceEpoch;
                 String receiverId = contact.phones![0].value!.toString().replaceAll(' ', '');
@@ -138,20 +133,6 @@ class _ContactScreenState extends State<ContactScreen> {
                   'receiver': receiverId,
                   'members': '',
                 });
-                _createdAt = created;
-
-                /*
-                bool isSended = await signaling.sendRequest(
-                    context, contact.phones![0].value!);
-                if (isSended == false) {
-                  Fluttertoast.showToast(
-                      msg: "You already sent a request to this user.",
-                      toastLength: Toast.LENGTH_SHORT,
-                      gravity: ToastGravity.CENTER,
-                      timeInSecForIosWeb: 1,
-                      textColor: Colors.white,
-                      fontSize: 16.0);
-                }*/
                 Navigator.pop(context);
               },
             ),
@@ -185,52 +166,6 @@ class _ContactScreenState extends State<ContactScreen> {
                 context: context,
                 builder: (context) {
                   return MultiSelect(items: finalContacts);
-                  /*return AlertDialog(
-                    title: const Text('Select Contacts'),
-                    content: SingleChildScrollView(
-                      child: ListBody(
-                        children: items
-                            .map((item) => CheckboxListTile(
-                                  value: _selectedItems.contains(item),
-                                  title: Text(item.givenName!),
-                                  controlAffinity:
-                                      ListTileControlAffinity.leading,
-                                  onChanged: (isChecked) =>
-                                      _itemChange(item, isChecked!),
-                                ))
-                            .toList(),
-                      ),
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: const Text('Cancel'),
-                      ),
-                      ElevatedButton(
-                        onPressed: () async {
-                          this.roomId = generateRoomID();
-                          print('Creating room $roomId');
-                          final created = DateTime.now().millisecondsSinceEpoch;
-                          await FirebaseFirestore.instance
-                              .collection('rooms')
-                              .doc(roomId)
-                              .set({
-                            'created': created,
-                            'sender': MyPhone.phoneNumber,
-                            'type': "group",
-                            'members': _selectedItems
-                                .map((e) => e.phones![0].value!.toString())
-                                .toList()
-                          });
-                          _createdAt = created;
-                          Navigator.pop(context, _selectedItems);
-                        },
-                        child: const Text('Submit'),
-                      ),
-                    ],
-                  );*/
                 },
               );
             },
@@ -320,8 +255,7 @@ class MultiSelect extends StatefulWidget {
 class _MultiSelectState extends State<MultiSelect> {
   // this variable holds the selected items
   final List<Contact> _selectedItems = [];
-  late final int _createdAt;
-  late final String roomId;
+  final TextEditingController _groupNameController = TextEditingController();
 
   String generateRoomID() {
     return DateTime.now().millisecondsSinceEpoch.toString();
@@ -345,7 +279,7 @@ class _MultiSelectState extends State<MultiSelect> {
 
 // this function is called when the Submit button is tapped
   void _submit() async {
-    this.roomId = generateRoomID();
+    var roomId = generateRoomID();
     print('Creating room $roomId');
     final created = DateTime.now().millisecondsSinceEpoch;
     await FirebaseFirestore.instance.collection('rooms').doc(roomId).set({
@@ -353,11 +287,16 @@ class _MultiSelectState extends State<MultiSelect> {
       'sender': MyPhone.phoneNumber,
       'type': "group",
       'receiver': '',
+      'groupName': _groupNameController.text, // Added groupName field
       'members':
           _selectedItems.map((e) => e.phones![0].value!.toString()).toList()
     });
-    _createdAt = created;
     Navigator.pop(context, _selectedItems);
+  }
+  @override
+  void dispose() {
+    _groupNameController.dispose();
+    super.dispose();
   }
 
   @override
@@ -366,7 +305,14 @@ class _MultiSelectState extends State<MultiSelect> {
       title: const Text('Select Contacts'),
       content: SingleChildScrollView(
         child: ListBody(
-          children: widget.items
+          children: <Widget>[TextField(
+              controller: _groupNameController,
+              decoration: InputDecoration(
+                labelText: 'Group Name',
+              ),
+            ),
+            const SizedBox(height: 16),
+                      ...widget.items
               .map((item) => CheckboxListTile(
                     value: _selectedItems.contains(item),
                     title: Text(item.givenName!),
@@ -374,6 +320,9 @@ class _MultiSelectState extends State<MultiSelect> {
                     onChanged: (isChecked) => _itemChange(item, isChecked!),
                   ))
               .toList(),
+            ],
+          
+
         ),
       ),
       actions: [

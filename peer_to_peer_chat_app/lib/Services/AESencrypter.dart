@@ -47,9 +47,20 @@ static BigInt generateRandomBigInt(BigInt max) {
         '61002891148799367012041784081793');
     final alicePrivateKey = BigInt.parse(localPrivateKey);
     final bobPublicKey = BigInt.parse(remotePublicKey);
-    final sharedKey = bobPublicKey.modPow(alicePrivateKey, prime).toString();
+    var sharedKey = bobPublicKey.modPow(alicePrivateKey, prime);//.toString();
+    if (sharedKey.toString().length > 32)
+     {
+      sharedKey = BigInt.parse(sharedKey.toString().substring(0, 32));
+    } 
+    else if (sharedKey.toString().length < 32) 
+    {
+      //this is for handling the extreme error case where the final key is less than 32 characters long
+      //both the server and client does this so even if the server sends a key that is less than 32 characters long
+      //they both will pad it to 32 characters
+      sharedKey = BigInt.parse(sharedKey.toString().padRight(32, '0'));
+    }
 
-    return sharedKey;
+    return sharedKey.toString();
   }
 
   // Perform AES encryption using the shared key
