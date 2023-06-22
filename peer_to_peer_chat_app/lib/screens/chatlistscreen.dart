@@ -1,11 +1,8 @@
-import 'dart:convert';
-
+import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_webrtc/flutter_webrtc.dart';
-import 'package:peer_to_peer_chat_app/phone.dart';
-import 'package:peer_to_peer_chat_app/webrtc_helper.dart';
-
+import 'package:peer_to_peer_chat_app/screens/phone.dart';
+import 'package:peer_to_peer_chat_app/src/models/contact_service.dart';
 import 'chat_screen.dart';
 
 class ChatListScreen extends StatefulWidget {
@@ -16,6 +13,24 @@ class ChatListScreen extends StatefulWidget {
 }
 
 class _ChatListScreenState extends State<ChatListScreen> {
+  List<Contact>? contacts;
+  @override
+  void initState() {
+    super.initState();
+    contacts = ContactService.allContacts;
+  }
+
+  String getContactName(String phoneNumber) {
+    for (var contact in contacts!) {
+      if (contact.phones != null && contact.phones!.isNotEmpty) {
+        var contactPhoneNumber = contact.phones![0].value!;
+        if (contactPhoneNumber == phoneNumber) {
+          return contact.givenName ?? '';
+        }
+      }
+    }
+    return phoneNumber;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,20 +40,20 @@ class _ChatListScreenState extends State<ChatListScreen> {
         child: StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance
               .collection('rooms')
-                  .where(
+              .where(
+                Filter.or(
+                  Filter("sender", isEqualTo: MyPhone.phoneNumber),
                   Filter.or(
-                    Filter("sender", isEqualTo: MyPhone.phoneNumber),
-                    Filter.or(
-                      Filter.and(
-                        Filter("type", isEqualTo: "peer"),
-                        Filter("receiver", isEqualTo: MyPhone.phoneNumber),
-                      ),
-                      Filter.and(
-                        Filter("type", isEqualTo: "group"),
-                        Filter("members", arrayContains: MyPhone.phoneNumber),
-                      ),
+                    Filter.and(
+                      Filter("type", isEqualTo: "peer"),
+                      Filter("receiver", isEqualTo: MyPhone.phoneNumber),
+                    ),
+                    Filter.and(
+                      Filter("type", isEqualTo: "group"),
+                      Filter("members", arrayContains: MyPhone.phoneNumber),
                     ),
                   ),
+                ),
               )
               .snapshots(),
           builder: (context, snapshot) {
@@ -53,14 +68,13 @@ class _ChatListScreenState extends State<ChatListScreen> {
                   String room_id = request.id;
                   String remotePeer;
                   if (request['type'] == "peer") {
-                                    if (request['receiver'] == MyPhone.phoneNumber) {
-                    remotePeer = request['sender'];
-                  }
-                  else{
-                    remotePeer = request['receiver'];
-                  }
-                  }
-                  else{
+                    String receiver_id = request['receiver'].replaceAll(' ', '');
+                    if (MyPhone.phoneNumber.contains(receiver_id)) {
+                      remotePeer = getContactName(request['sender']);
+                    } else {
+                      remotePeer = getContactName(request['receiver']);
+                    }
+                  } else {
                     remotePeer = "GROUP";
                   }
                   return ListTile(
@@ -72,7 +86,14 @@ class _ChatListScreenState extends State<ChatListScreen> {
                           icon: const Icon(Icons.arrow_right_outlined),
                           onPressed: () {
                             //Navigator.push(context, MaterialPageRoute(builder: (context) => ChatScreen(remotePhoneNumber: remotePeer,),));
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => ChatScreen(roomId: room_id,),));
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ChatScreen(
+                                    roomId: room_id,
+                                    chatName: remotePeer,
+                                  ),
+                                ));
                           },
                         ),
                       ],

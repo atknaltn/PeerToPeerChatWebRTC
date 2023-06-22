@@ -2,9 +2,7 @@ import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
-import 'package:peer_to_peer_chat_app/phone.dart';
-import 'package:peer_to_peer_chat_app/signal_handler.dart';
-import 'package:peer_to_peer_chat_app/request_screen.dart';
+import 'package:peer_to_peer_chat_app/screens/phone.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
@@ -13,6 +11,8 @@ import 'dart:math';
 class ContactScreen extends StatefulWidget {
   @override
   _ContactScreenState createState() => _ContactScreenState();
+  static _ContactScreenState? of(BuildContext context) =>
+    context.findAncestorStateOfType<_ContactScreenState>();
 }
 
 class _ContactScreenState extends State<ContactScreen> {
@@ -23,7 +23,6 @@ class _ContactScreenState extends State<ContactScreen> {
   bool isLoading = true;
   final List<Contact> _selectedItems = [];
   String groupName = '';
-  var signaling = SignalHandler();
 
   @override
   void initState() {
@@ -31,6 +30,20 @@ class _ContactScreenState extends State<ContactScreen> {
     getContactPermission();
     _getAppUsers();
   }
+
+
+
+  String getContactName(String phoneNumber) {
+  for (var contact in contacts) {
+    if (contact.phones != null && contact.phones!.isNotEmpty) {
+      var contactPhoneNumber = contact.phones![0].value!;
+      if (contactPhoneNumber == phoneNumber) {
+        return contact.givenName ?? '';
+      }
+    }
+  }
+  return '';
+}
 
 // This function is triggered when a checkbox is checked or unchecked
   void _itemChange(Contact itemValue, bool isSelected) {
@@ -84,8 +97,10 @@ class _ContactScreenState extends State<ContactScreen> {
 
   bool comparePhoneNumbers(String phoneNumber1) {
     String string1 = phoneNumber1.replaceAll(' ', '');
-    if (_appUsers.contains(string1)) {
-      return true;
+    for (var element in _appUsers) {
+      if (element.contains(string1) && phoneNumber1 != MyPhone.phoneNumber) {
+        return true;
+      }
     }
     return false;
   }
@@ -112,6 +127,7 @@ class _ContactScreenState extends State<ContactScreen> {
                 this.roomId = generateRoomID();
                 print('Creating room $roomId');
                 final created = DateTime.now().millisecondsSinceEpoch;
+                String receiverId = contact.phones![0].value!.toString().replaceAll(' ', '');
                 await FirebaseFirestore.instance
                     .collection('rooms')
                     .doc(roomId)
@@ -119,7 +135,7 @@ class _ContactScreenState extends State<ContactScreen> {
                   'created': created,
                   'sender': MyPhone.phoneNumber,
                   'type': "peer",
-                  'receiver': contact.phones![0].value!.toString(),
+                  'receiver': receiverId,
                   'members': '',
                 });
                 _createdAt = created;
@@ -347,7 +363,7 @@ class _MultiSelectState extends State<MultiSelect> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Select Topics'),
+      title: const Text('Select Contacts'),
       content: SingleChildScrollView(
         child: ListBody(
           children: widget.items

@@ -1,8 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:peer_to_peer_chat_app/phone.dart';
-import 'package:peer_to_peer_chat_app/webrtc_helper.dart';
+import 'package:peer_to_peer_chat_app/screens/phone.dart';
 import 'package:pinput/pinput.dart';
 
 class MyVerify extends StatefulWidget {
@@ -14,7 +13,6 @@ class MyVerify extends StatefulWidget {
 
 class _MyVerifyState extends State<MyVerify> {
   final FirebaseAuth auth = FirebaseAuth.instance;
-  final webRTCHelper = WebRTCHelper();
   String sdp = "";
 
   @override
@@ -128,14 +126,12 @@ class _MyVerifyState extends State<MyVerify> {
                           '/',
                           (route) => false,
                         );
-                        sdp = await webRTCHelper.offerConnection() as String;
-                        print("phone number: " + MyPhone.phoneNumber);
-                        print("sdp: " + sdp);
+                       /* sdp = await webRTCHelper.offerConnection() as String;*/
 
                         await users
                             .doc(MyPhone.phoneNumber)
                             .set({
-                              'sdp': sdp,
+                              'sdp': '',
                             })
                             .then((value) => print("User Added."))
                             .catchError(

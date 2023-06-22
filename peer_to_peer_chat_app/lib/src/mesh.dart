@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
-import 'package:uuid/uuid.dart';
+import 'package:peer_to_peer_chat_app/Services/AESencrypter.dart';
+import 'package:peer_to_peer_chat_app/screens/phone.dart';
 
 import 'models/message.dart';
 import 'models/signalling.dart';
@@ -63,7 +65,7 @@ class WebRTCMesh<ISignalling extends Signalling<SignalMessage>> {
   /// Sends a join announcement to all peers on the mesh
   WebRTCMesh(
       {required this.roomID, String? peerID, required this.signallingCreator}) {
-    localPeerID = peerID ?? const Uuid().v4();
+    localPeerID = peerID ?? MyPhone.phoneNumber; //const Uuid().v4();
     _signalling = signallingCreator(roomID, localPeerID);
     _signalling.onMessage = onMessage;
 
@@ -101,7 +103,7 @@ class WebRTCMesh<ISignalling extends Signalling<SignalMessage>> {
     if (pc.state != PeerConnectionState.connected) {
       print('peer connection not ready for $peerID');
       _signalling.sendMessage(
-          'failed_datachannel', {'message': message, 'to': peerID},
+          'failed_datachannel', {'message': message, 'to': peerID, 'from': localPeerID},
           announce: true);
       return;
     }
@@ -119,7 +121,11 @@ class WebRTCMesh<ISignalling extends Signalling<SignalMessage>> {
   /// Send a message to all peers in the mesh
   Future<void> sendToAllPeers(String message) async {
     for (final peerID in _peerConnections.keys) {
-      await sendToPeer(peerID, message);
+      DocumentSnapshot user = await FirebaseFirestore.instance.collection('users').doc(peerID).get();
+      var remotePublicKey = user['publicKey'];
+      final sharedKey = AESencrypter.performDiffieHellmanExchange(MyPhone.keyPair['privateKey']!, remotePublicKey);
+      final encryptedMessage = AESencrypter.performAESEncryption(sharedKey, message);
+      await sendToPeer(peerID, encryptedMessage);
     }
   }
 
@@ -342,7 +348,7 @@ class WebRTCMesh<ISignalling extends Signalling<SignalMessage>> {
           messageStream.add(Message(
               type: 'failed_datachannel',
               message: message['message'],
-              from: localPeerID));
+              from: message['from']));
         }
         break;
       case 'leave':

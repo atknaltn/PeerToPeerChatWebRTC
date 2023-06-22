@@ -5,21 +5,21 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "PeerToPeerChatApp",
-            "cwd": "PeerToPeerChatApp",
+            "name": "peer_to_peer_chat_app",
+            "cwd": "peer_to_peer_chat_app",
             "request": "launch",
             "type": "dart"
         },
         {
-            "name": "PeerToPeerChatApp (profile mode)",
-            "cwd": "PeerToPeerChatApp",
+            "name": "peer_to_peer_chat_app (profile mode)",
+            "cwd": "peer_to_peer_chat_app",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile"
         },
         {
-            "name": "PeerToPeerChatApp (release mode)",
-            "cwd": "PeerToPeerChatApp",
+            "name": "peer_to_peer_chat_app (release mode)",
+            "cwd": "peer_to_peer_chat_app",
             "request": "launch",
             "type": "dart",
             "flutterMode": "release"
@@ -28,27 +28,27 @@
             "name": "Android",
             "request": "launch",
             "type": "dart",
-            "program": "PeerToPeerChatApp/lib/main.dart",
+            "program": "peer_to_peer_chat_app/lib/main.dart",
             "deviceId": "emulator-5554"
         },
         {
             "name": "Android_2",
             "request": "launch",
             "type": "dart",
-            "program": "PeerToPeerChatApp/lib/main.dart",
+            "program": "peer_to_peer_chat_app/lib/main.dart",
             "deviceId": "emulator-5556"
         },
         {
             "name": "Android_3",
             "request": "launch",
             "type": "dart",
-            "program": "PeerToPeerChatApp/lib/main.dart",
+            "program": "peer_to_peer_chat_app/lib/main.dart",
             "deviceId": "emulator-5558"
         },
         {
             "name": "Samsung",
             "request": "launch",
-            "program": "PeerToPeerChatApp/lib/main.dart",
+            "program": "peer_to_peer_chat_app/lib/main.dart",
             "type": "dart",
             "deviceId": "33005266aa2a9231"
         },

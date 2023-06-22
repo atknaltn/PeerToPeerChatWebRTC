@@ -1,5 +1,5 @@
 class Message {
-  final String? message;
+  late final String? message;
   final String type;
   final String from;
 

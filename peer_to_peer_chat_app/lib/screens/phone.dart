@@ -1,13 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:peer_to_peer_chat_app/webrtc_helper.dart';
 
 class MyPhone extends StatefulWidget {
   const MyPhone({Key? key}) : super(key: key);
 
   static String verify = "";
-  static String phoneNumber = "+901234567890";
-  static Map<String, WebRTCHelper?> webRTCHelpers = {};
+  static String phoneNumber = "";
+  static Map<String, String> keyPair = {};
 
   @override
   State<MyPhone> createState() => _MyPhoneState();
